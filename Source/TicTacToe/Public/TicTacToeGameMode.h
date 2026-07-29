@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Blueprint/UserWidget.h"
 #include "TicTacToeGameMode.generated.h"
 
 class ABoardActor;
@@ -43,6 +44,16 @@ public:
     UFUNCTION(BlueprintPure)
     bool IsGameOver() const;
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateTurnDisplay(int32 Player);
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateGameOverDisplay(int32 WinningPlayer);
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateRestartDisplay();
+
+
 protected:
 
     // The grid — 9 squares, each stores 0 (empty), 1 (player 1) or 2 (player 2)
@@ -64,6 +75,15 @@ protected:
     UPROPERTY()
     ABoardActor* BoardActorRef;
 
+    // Get the player controller and set input mode
+    void SetPlayerInputSettings(APlayerController* PC);
+
+    //Sets BoardActorRef
+    void SetBoardActorRef();
+
+    //Sets Camera Settings
+    void SetCameraSettings(APlayerController* PC);
+
 private:
 
     // Checks all win conditions — returns winning player or 0
@@ -74,4 +94,6 @@ private:
 
     // Sets up a fresh empty grid
     void InitialiseGrid();
+
+ 
 };

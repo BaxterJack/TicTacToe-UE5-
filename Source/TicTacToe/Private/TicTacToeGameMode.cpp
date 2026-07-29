@@ -4,6 +4,7 @@
 #include "TicTacToeGameMode.h"
 #include "BoardActor.h"
 #include "GameFramework/PlayerController.h"
+#include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -13,16 +14,16 @@ ATicTacToeGameMode::ATicTacToeGameMode() {
 
 void ATicTacToeGameMode::BeginPlay() {
 	Super::BeginPlay();
-	InitialiseGrid();
-
-	BoardActorRef = Cast<ABoardActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoardActor::StaticClass()));
-	if (!BoardActorRef)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("BoardActor not found in level!"));
-	}
-
-	// Get the player controller and set input mode
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	SetCameraSettings(PC);
+	InitialiseGrid();
+	SetBoardActorRef();
+	SetPlayerInputSettings(PC);
+
+}
+
+void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
+	PC = GetWorld()->GetFirstPlayerController();
 	if (PC)
 	{
 		PC->bShowMouseCursor = true;
@@ -35,12 +36,35 @@ void ATicTacToeGameMode::BeginPlay() {
 	}
 }
 
+void ATicTacToeGameMode::SetBoardActorRef() {
+	BoardActorRef = Cast<ABoardActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoardActor::StaticClass()));
+	if (!BoardActorRef)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BoardActor not found in level!"));
+	}
+}
+
+void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
+{
+	AActor* Camera = UGameplayStatics::GetActorOfClass(GetWorld(), ACameraActor::StaticClass());
+	if (Camera)
+	{
+		PC->SetViewTargetWithBlend(Camera);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Camera not found!"));
+	}
+}
+
 void ATicTacToeGameMode::InitialiseGrid() {
 	Grid.Init(0, 9);
 	CurrentPlayer = 1;
 	bGameOver = false;
 	Winner = 0;
 }
+
+
 
 void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	if (bGameOver || Grid[SquareIndex] != 0)
@@ -59,6 +83,7 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 		bGameOver = true;
 		Winner = WinResult;
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins!"), Winner);
+		UpdateGameOverDisplay(WinResult);
 		return;
 	}
 
@@ -66,10 +91,11 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 		bGameOver = true;
 		Winner = 0;
 		UE_LOG(LogTemp, Warning, TEXT("Draw!"));
+		UpdateGameOverDisplay(0);
 		return;
 	}
 	SwitchTurn();
-
+	UpdateTurnDisplay(CurrentPlayer);
 }
 
 void ATicTacToeGameMode::SwitchTurn()
@@ -83,6 +109,8 @@ void ATicTacToeGameMode::RestartGame()
 		BoardActorRef->ClearBoard();
 	}
 	InitialiseGrid();
+	UpdateTurnDisplay(1);
+	UpdateRestartDisplay();
 }
 
 int32 ATicTacToeGameMode::GetCurrentPlayer() const

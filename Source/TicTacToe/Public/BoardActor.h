@@ -44,6 +44,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetBoardSpaces();
 
+
+
 protected:
 
 	// Stores references to all spawned pieces so we can clear them on restart
