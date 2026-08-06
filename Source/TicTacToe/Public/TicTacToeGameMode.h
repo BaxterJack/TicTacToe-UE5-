@@ -53,6 +53,8 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     void UpdateRestartDisplay();
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateScoreDisplay();
 
 protected:
 
@@ -75,6 +77,16 @@ protected:
     UPROPERTY()
     ABoardActor* BoardActorRef;
 
+    UPROPERTY(BlueprintReadOnly)
+    int32 PlayerOneScore = 0;
+
+    UPROPERTY(BlueprintReadOnly)
+    int32 PlayerTwoScore = 0;
+
+    void UpdatePlayersScore(int32 winner);
+
+    void ResetPlayerScores();
+
     // Get the player controller and set input mode
     void SetPlayerInputSettings(APlayerController* PC);
 
@@ -94,6 +106,8 @@ private:
 
     // Sets up a fresh empty grid
     void InitialiseGrid();
+
+    int32 DetermineStartingPlayer();
 
  
 };

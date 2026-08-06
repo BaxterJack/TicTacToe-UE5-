@@ -13,14 +13,18 @@ ATicTacToeGameMode::ATicTacToeGameMode() {
 }
 
 void ATicTacToeGameMode::BeginPlay() {
+	Winner = 0;
+	InitialiseGrid();
 	Super::BeginPlay();
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	SetCameraSettings(PC);
-	InitialiseGrid();
+
 	SetBoardActorRef();
 	SetPlayerInputSettings(PC);
-
+	
 }
+
+
 
 void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
 	PC = GetWorld()->GetFirstPlayerController();
@@ -59,12 +63,22 @@ void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
 
 void ATicTacToeGameMode::InitialiseGrid() {
 	Grid.Init(0, 9);
-	CurrentPlayer = 1;
+	CurrentPlayer = DetermineStartingPlayer();
 	bGameOver = false;
-	Winner = 0;
+
 }
 
-
+int32 ATicTacToeGameMode::DetermineStartingPlayer() {
+	if (Winner == 0) {
+		return FMath::RandRange(1, 2);
+		
+	}
+	else {
+		int32 startingPlayer = 0;
+		startingPlayer = (Winner == 1) ? 2 : 1;
+		return startingPlayer;
+	}
+}
 
 void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	if (bGameOver || Grid[SquareIndex] != 0)
@@ -84,6 +98,7 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 		Winner = WinResult;
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins!"), Winner);
 		UpdateGameOverDisplay(WinResult);
+		UpdatePlayersScore(Winner);
 		return;
 	}
 
@@ -98,6 +113,28 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	UpdateTurnDisplay(CurrentPlayer);
 }
 
+void ATicTacToeGameMode::UpdatePlayersScore(int32 winner)
+{
+	switch (winner)
+	{
+	case 1:
+		PlayerOneScore += 1;
+		break;
+	case 2:
+		PlayerTwoScore += 1;
+		break;
+	}
+	UpdateScoreDisplay();
+}
+
+
+
+
+void ATicTacToeGameMode::ResetPlayerScores() {
+	PlayerOneScore = 0;
+	PlayerTwoScore = 0;
+}
+
 void ATicTacToeGameMode::SwitchTurn()
 {
 	CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
@@ -109,7 +146,7 @@ void ATicTacToeGameMode::RestartGame()
 		BoardActorRef->ClearBoard();
 	}
 	InitialiseGrid();
-	UpdateTurnDisplay(1);
+	UpdateTurnDisplay(CurrentPlayer);
 	UpdateRestartDisplay();
 }
 
