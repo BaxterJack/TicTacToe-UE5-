@@ -15,10 +15,11 @@ ATicTacToeGameMode::ATicTacToeGameMode() {
 void ATicTacToeGameMode::BeginPlay() {
 	Winner = 0;
 	InitialiseGrid();
+	SetGameInstance();
 	Super::BeginPlay();
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	SetCameraSettings(PC);
-
+	SetGameState();
 	SetBoardActorRef();
 	SetPlayerInputSettings(PC);
 	
@@ -46,6 +47,21 @@ void ATicTacToeGameMode::SetBoardActorRef() {
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BoardActor not found in level!"));
 	}
+}
+
+void ATicTacToeGameMode::SetGameState() {
+	TTTGameState = Cast<ATTTGameStateBase>(GameState);
+	if(!TTTGameState)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TTTGameState not found!"));
+	}
+}
+
+void ATicTacToeGameMode::SetGameInstance() {
+	TTTGameInstance = Cast<UTTTGameInstance>(GetGameInstance());
+		if (!TTTGameInstance) {
+			UE_LOG(LogTemp, Warning, TEXT("TTTGameInstance not found!"));
+		}
 }
 
 void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
@@ -115,25 +131,17 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 
 void ATicTacToeGameMode::UpdatePlayersScore(int32 winner)
 {
-	switch (winner)
+	if (TTTGameState)
 	{
-	case 1:
-		PlayerOneScore += 1;
-		break;
-	case 2:
-		PlayerTwoScore += 1;
-		break;
+		TTTGameState->UpdateScore(winner);
+		UpdateScoreDisplay(TTTGameState->PlayerOneScore, TTTGameState->PlayerTwoScore);
 	}
-	UpdateScoreDisplay();
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TTTGameState is null in UpdatePlayersScore!"));
+	}
 }
 
-
-
-
-void ATicTacToeGameMode::ResetPlayerScores() {
-	PlayerOneScore = 0;
-	PlayerTwoScore = 0;
-}
 
 void ATicTacToeGameMode::SwitchTurn()
 {

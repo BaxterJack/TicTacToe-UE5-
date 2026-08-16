@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "TTTGameStateBase.h"
+#include "TTTGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "TicTacToeGameMode.generated.h"
 
@@ -54,7 +56,7 @@ public:
     void UpdateRestartDisplay();
 
     UFUNCTION(BlueprintImplementableEvent)
-    void UpdateScoreDisplay();
+    void UpdateScoreDisplay(int32 P1Score, int32 P2Score);
 
 protected:
 
@@ -77,21 +79,24 @@ protected:
     UPROPERTY()
     ABoardActor* BoardActorRef;
 
-    UPROPERTY(BlueprintReadOnly)
-    int32 PlayerOneScore = 0;
+    UPROPERTY()
+    ATTTGameStateBase* TTTGameState;
 
-    UPROPERTY(BlueprintReadOnly)
-    int32 PlayerTwoScore = 0;
+    UPROPERTY()
+    UTTTGameInstance* TTTGameInstance;
 
     void UpdatePlayersScore(int32 winner);
 
-    void ResetPlayerScores();
 
     // Get the player controller and set input mode
     void SetPlayerInputSettings(APlayerController* PC);
 
     //Sets BoardActorRef
     void SetBoardActorRef();
+
+    void SetGameState();
+
+    void SetGameInstance();
 
     //Sets Camera Settings
     void SetCameraSettings(APlayerController* PC);

@@ -1,0 +1,36 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
+#include "TTTGameInstance.generated.h"
+
+UENUM(BlueprintType)
+enum class EGameModeChoice :uint8 {
+	TwoPlayer UMETA(DisplayName = "Two Players"),
+	VsAI UMETA(DisplayName = "Vs Ai")
+};
+
+UCLASS()
+class TICTACTOE_API UTTTGameInstance : public UGameInstance
+{
+	GENERATED_BODY()
+	
+public:
+
+
+	UPROPERTY(BlueprintReadWrite)
+	FString PlayerOneName = TEXT("Player 1");
+	UPROPERTY(BlueprintReadWrite)
+	FString PlayerTwoName = TEXT("Player 2");
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 SeriesLength = 1;
+
+	UPROPERTY()
+	EGameModeChoice GameModeChoice = EGameModeChoice::TwoPlayer;
+
+private:
+
+};
