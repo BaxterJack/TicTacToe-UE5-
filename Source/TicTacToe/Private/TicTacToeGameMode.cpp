@@ -64,6 +64,10 @@ void ATicTacToeGameMode::SetGameInstance() {
 		}
 }
 
+UTTTGameInstance* ATicTacToeGameMode::GetTTTGameInstance() {
+	return TTTGameInstance;
+}
+
 void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
 {
 	AActor* Camera = UGameplayStatics::GetActorOfClass(GetWorld(), ACameraActor::StaticClass());
@@ -96,6 +100,19 @@ int32 ATicTacToeGameMode::DetermineStartingPlayer() {
 	}
 }
 
+bool ATicTacToeGameMode::CheckSeriesWin(int32 WinningPlayer)
+{
+	if (!TTTGameState || !TTTGameInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CheckSeriesWin: null reference"));
+		return false;
+	}
+	if (TTTGameState->GetPlayerScore(WinningPlayer)==TTTGameInstance->GetSeriesLength()) {
+		return true;
+	}
+	return false;
+}
+
 void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	if (bGameOver || Grid[SquareIndex] != 0)
 	{
@@ -113,8 +130,13 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 		bGameOver = true;
 		Winner = WinResult;
 		UE_LOG(LogTemp, Warning, TEXT("Player %d wins!"), Winner);
-		UpdateGameOverDisplay(WinResult);
 		UpdatePlayersScore(Winner);
+		if(CheckSeriesWin(Winner))
+		{
+			UpdateSeriesOverDisplay(Winner);
+			return;
+		}
+		UpdateGameOverDisplay(Winner);
 		return;
 	}
 
@@ -158,6 +180,23 @@ void ATicTacToeGameMode::RestartGame()
 	UpdateRestartDisplay();
 }
 
+void ATicTacToeGameMode::RestartSeries()
+{
+	if (TTTGameState)
+	{
+		TTTGameState->ResetPlayerScores();
+	}
+	Winner = 0;
+	if (BoardActorRef)
+	{
+		BoardActorRef->ClearBoard();
+	}
+	InitialiseGrid();
+	UpdateTurnDisplay(CurrentPlayer);
+	UpdateScoreDisplay(0, 0);
+	// Need a new BlueprintImplementableEvent to reset the series over UI
+}
+
 int32 ATicTacToeGameMode::GetCurrentPlayer() const
 {
 	return CurrentPlayer;
@@ -196,6 +235,8 @@ int32 ATicTacToeGameMode::CheckWinCondition() {
 	return 0; // No winner found
 	
 }
+
+
 
 bool ATicTacToeGameMode::CheckDrawCondition() {
 	for (int32 i = 0; i < 9; i++) {

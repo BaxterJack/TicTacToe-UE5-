@@ -38,6 +38,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void RestartGame();
 
+    UFUNCTION(BlueprintCallable)
+    void RestartSeries();
+
     // Returns the current player number (1 or 2)
     UFUNCTION(BlueprintPure)
     int32 GetCurrentPlayer() const;
@@ -57,6 +60,12 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent)
     void UpdateScoreDisplay(int32 P1Score, int32 P2Score);
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateSeriesOverDisplay(int32 WinningPlayer);
+
+    UFUNCTION(BlueprintCallable)
+    UTTTGameInstance* GetTTTGameInstance();
 
 protected:
 
@@ -105,6 +114,8 @@ private:
 
     // Checks all win conditions — returns winning player or 0
     int32 CheckWinCondition();
+
+    bool CheckSeriesWin(int32 WinningPlayer);
 
     // Checks if all squares are filled
     bool CheckDrawCondition();

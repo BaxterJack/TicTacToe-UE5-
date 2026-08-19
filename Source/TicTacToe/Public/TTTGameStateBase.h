@@ -18,11 +18,16 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 PlayerOneScore = 0;
+
 	UPROPERTY(BlueprintReadOnly)
 	int32 PlayerTwoScore = 0;
+
 	void ResetPlayerScores();
 
 	void UpdateScore(int32 PlayerNumber);
+
+	int32 GetPlayerScore(int32 PlayerNumber);
+
 protected:
 	
 	

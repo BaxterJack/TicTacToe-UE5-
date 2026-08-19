@@ -31,6 +31,13 @@ public:
 	UPROPERTY()
 	EGameModeChoice GameModeChoice = EGameModeChoice::TwoPlayer;
 
+	void SetSeriesLength(int32 NumSeries);
+
+	int32 GetSeriesLength();
+
+	UFUNCTION(BlueprintCallable)
+	void SetVSGameModeChoice(EGameModeChoice InGameModeChoice);
+
 private:
 
 };
