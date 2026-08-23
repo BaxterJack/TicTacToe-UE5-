@@ -114,6 +114,11 @@ bool ATicTacToeGameMode::CheckSeriesWin(int32 WinningPlayer)
 }
 
 void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
+	if (SquareIndex < 0 || SquareIndex > 8)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleSquareSelected called with invalid index: %d"), SquareIndex);
+		return;
+	}
 	if (bGameOver || Grid[SquareIndex] != 0)
 	{
 		return;
@@ -194,7 +199,7 @@ void ATicTacToeGameMode::RestartSeries()
 	InitialiseGrid();
 	UpdateTurnDisplay(CurrentPlayer);
 	UpdateScoreDisplay(0, 0);
-	// Need a new BlueprintImplementableEvent to reset the series over UI
+	UpdateRestartDisplay();
 }
 
 int32 ATicTacToeGameMode::GetCurrentPlayer() const
