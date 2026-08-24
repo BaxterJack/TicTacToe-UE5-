@@ -6,10 +6,12 @@
 #include "GameFramework/GameModeBase.h"
 #include "TTTGameStateBase.h"
 #include "TTTGameInstance.h"
+#include "TTT_StateMachine.h"
 #include "Blueprint/UserWidget.h"
 #include "TicTacToeGameMode.generated.h"
 
 class ABoardActor;
+class UTTT_AI;
 /**
  * 
  */
@@ -67,6 +69,11 @@ public:
     UFUNCTION(BlueprintCallable)
     UTTTGameInstance* GetTTTGameInstance();
 
+    UTTT_AI* GetAiPlayer();
+
+    TArray<int32> GetGrid();
+
+    void TriggerAiTurn();
 protected:
 
     // The grid — 9 squares, each stores 0 (empty), 1 (player 1) or 2 (player 2)
@@ -94,6 +101,11 @@ protected:
     UPROPERTY()
     UTTTGameInstance* TTTGameInstance;
 
+    UPROPERTY()
+    UTTT_StateMachine* TTT_StateMachine;
+
+    void InitialiseStateMachine();
+
     void UpdatePlayersScore(int32 winner);
 
 
@@ -110,6 +122,10 @@ protected:
     //Sets Camera Settings
     void SetCameraSettings(APlayerController* PC);
 
+    void CreateAiPlayer(EAiDifficulty InAiDifficulty);
+
+
+
 private:
 
     // Checks all win conditions — returns winning player or 0
@@ -125,5 +141,6 @@ private:
 
     int32 DetermineStartingPlayer();
 
- 
+    UPROPERTY()
+    UTTT_AI* AiPlayer;
 };

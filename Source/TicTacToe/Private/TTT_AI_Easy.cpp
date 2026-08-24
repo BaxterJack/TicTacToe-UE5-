@@ -7,7 +7,6 @@
 //InAiPlayerNumber exists, but is unsed for Easy AI - commented out name to acknowledge its existence
 int32 UTTT_AI_Easy::ChooseMove(const TArray<int32>& InGrid, int32 /*InAiPlayerNumber*/)
 {
-
 	return GetRandomSquare(GetEmptySpaces(InGrid));
 }
 

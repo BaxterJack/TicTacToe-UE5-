@@ -18,5 +18,9 @@ void UTTTGameInstance::SetVSGameModeChoice(EGameModeChoice InGameModeChoice)
 	GameModeChoice = InGameModeChoice;
 }
 
+void UTTTGameInstance::SetAiDiffuclty(EAiDifficulty InAiDifficulty) {
+	AiDifficulty = InAiDifficulty;
+}
+
 
 

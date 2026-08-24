@@ -11,6 +11,13 @@ enum class EGameModeChoice :uint8 {
 	TwoPlayer UMETA(DisplayName = "Two Players"),
 	VsAI UMETA(DisplayName = "Vs Ai")
 };
+UENUM(BlueprintType)
+enum class EAiDifficulty :uint8 {
+	Easy UMETA(DisplayName = "Easy Difficulty"),
+	Medium UMETA(DisplayName = "Medium Difficulty"),
+	Impossible UMETA(DisplayName = "Impossible Difficulty")
+};
+
 
 UCLASS()
 class TICTACTOE_API UTTTGameInstance : public UGameInstance
@@ -31,6 +38,8 @@ public:
 	UPROPERTY()
 	EGameModeChoice GameModeChoice = EGameModeChoice::TwoPlayer;
 
+	EAiDifficulty AiDifficulty = EAiDifficulty::Easy;
+
 	void SetSeriesLength(int32 NumSeries);
 
 	int32 GetSeriesLength();
@@ -38,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetVSGameModeChoice(EGameModeChoice InGameModeChoice);
 
-private:
+	UFUNCTION(BlueprintCallable)
+	void SetAiDiffuclty(EAiDifficulty InAiDifficulty);
 
+private:
+	
 };

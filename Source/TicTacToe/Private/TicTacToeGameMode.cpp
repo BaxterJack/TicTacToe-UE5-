@@ -3,6 +3,8 @@
 
 #include "TicTacToeGameMode.h"
 #include "BoardActor.h"
+#include "TTT_AI.h"
+#include "TTT_AI_Easy.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,10 +24,61 @@ void ATicTacToeGameMode::BeginPlay() {
 	SetGameState();
 	SetBoardActorRef();
 	SetPlayerInputSettings(PC);
-	
+	if (TTTGameInstance->GameModeChoice == EGameModeChoice::VsAI) {
+		CreateAiPlayer(TTTGameInstance->AiDifficulty);
+		UE_LOG(LogTemp, Warning, TEXT("Ai has been created!"))
+	}
+	InitialiseStateMachine();
 }
 
+void ATicTacToeGameMode::InitialiseStateMachine() {
+	TTT_StateMachine = NewObject<UTTT_StateMachine>(this);
+	if (TTT_StateMachine) {
+		TTT_StateMachine->Initialise(this);
+	}
+	else { 
+		UE_LOG(LogTemp, Warning, TEXT("State Machine not Found!"))
+	}
+}
 
+void ATicTacToeGameMode::CreateAiPlayer(EAiDifficulty InAiDifficulty) {
+	switch (InAiDifficulty)
+	{
+
+
+	case EAiDifficulty::Easy:
+		AiPlayer = NewObject<UTTT_AI_Easy>(this);
+		if (!AiPlayer) {
+			UE_LOG(LogTemp, Warning, TEXT("Easy Ai is not found!"));
+		}
+		break;
+	//case EAiDifficulty::Medium:
+
+	//	if (!AiPlayer) {
+	//		UE_LOG(LogTemp, Warning, TEXT("Medium Ai is not found!"));
+	//	}
+	//	break;
+
+	//case EAiDifficulty::Impossible:
+
+	//	if (!AiPlayer) {
+	//		UE_LOG(LogTemp, Warning, TEXT("Impossible Ai is not found!"));
+	//	}
+	//	break;
+
+	default:
+		AiPlayer = NewObject<UTTT_AI_Easy>(this);
+		if (!AiPlayer) {
+			UE_LOG(LogTemp, Warning, TEXT("Default Easy Ai is not found!"));
+		}
+		break;
+	}
+}
+
+void ATicTacToeGameMode::TriggerAiTurn() {
+	HandleSquareSelected(AiPlayer->ChooseMove(Grid, 2));
+
+}
 
 void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
 	PC = GetWorld()->GetFirstPlayerController();
@@ -66,6 +119,20 @@ void ATicTacToeGameMode::SetGameInstance() {
 
 UTTTGameInstance* ATicTacToeGameMode::GetTTTGameInstance() {
 	return TTTGameInstance;
+}
+
+UTTT_AI* ATicTacToeGameMode::GetAiPlayer()
+{
+	if (AiPlayer) {
+		return AiPlayer;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("AiPlayer not found!"));
+	return nullptr;
+}
+
+TArray<int32> ATicTacToeGameMode::GetGrid()
+{
+	return Grid;
 }
 
 void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
@@ -154,6 +221,7 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	}
 	SwitchTurn();
 	UpdateTurnDisplay(CurrentPlayer);
+	TTT_StateMachine->TransitionToState(TTT_StateMachine->WaitingForInput);
 }
 
 void ATicTacToeGameMode::UpdatePlayersScore(int32 winner)
