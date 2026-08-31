@@ -40,8 +40,12 @@ public:
     UFUNCTION(BlueprintCallable)
     void RestartGame();
 
+    void SetupGame();
+
     UFUNCTION(BlueprintCallable)
     void RestartSeries();
+
+    void SetupSeries();
 
     // Returns the current player number (1 or 2)
     UFUNCTION(BlueprintPure)
@@ -74,6 +78,11 @@ public:
     TArray<int32> GetGrid();
 
     void TriggerAiTurn();
+
+    void InitialiseTTTGameMode();
+
+    void NextState();
+
 protected:
 
     // The grid — 9 squares, each stores 0 (empty), 1 (player 1) or 2 (player 2)

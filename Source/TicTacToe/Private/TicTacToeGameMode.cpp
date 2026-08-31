@@ -15,10 +15,13 @@ ATicTacToeGameMode::ATicTacToeGameMode() {
 }
 
 void ATicTacToeGameMode::BeginPlay() {
-	Winner = 0;
-	InitialiseGrid();
-	SetGameInstance();
 	Super::BeginPlay();
+	InitialiseStateMachine();
+}
+
+void ATicTacToeGameMode::InitialiseTTTGameMode()
+{
+	SetGameInstance();
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	SetCameraSettings(PC);
 	SetGameState();
@@ -28,7 +31,6 @@ void ATicTacToeGameMode::BeginPlay() {
 		CreateAiPlayer(TTTGameInstance->AiDifficulty);
 		UE_LOG(LogTemp, Warning, TEXT("Ai has been created!"))
 	}
-	InitialiseStateMachine();
 }
 
 void ATicTacToeGameMode::InitialiseStateMachine() {
@@ -41,131 +43,26 @@ void ATicTacToeGameMode::InitialiseStateMachine() {
 	}
 }
 
-void ATicTacToeGameMode::CreateAiPlayer(EAiDifficulty InAiDifficulty) {
-	switch (InAiDifficulty)
-	{
-
-
-	case EAiDifficulty::Easy:
-		AiPlayer = NewObject<UTTT_AI_Easy>(this);
-		if (!AiPlayer) {
-			UE_LOG(LogTemp, Warning, TEXT("Easy Ai is not found!"));
-		}
-		break;
-	//case EAiDifficulty::Medium:
-
-	//	if (!AiPlayer) {
-	//		UE_LOG(LogTemp, Warning, TEXT("Medium Ai is not found!"));
-	//	}
-	//	break;
-
-	//case EAiDifficulty::Impossible:
-
-	//	if (!AiPlayer) {
-	//		UE_LOG(LogTemp, Warning, TEXT("Impossible Ai is not found!"));
-	//	}
-	//	break;
-
-	default:
-		AiPlayer = NewObject<UTTT_AI_Easy>(this);
-		if (!AiPlayer) {
-			UE_LOG(LogTemp, Warning, TEXT("Default Easy Ai is not found!"));
-		}
-		break;
-	}
+void ATicTacToeGameMode::NextState() {
+	TTT_StateMachine->TransitionToNextState();
 }
+
+
 
 void ATicTacToeGameMode::TriggerAiTurn() {
 	HandleSquareSelected(AiPlayer->ChooseMove(Grid, 2));
 
 }
 
-void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
-	PC = GetWorld()->GetFirstPlayerController();
-	if (PC)
-	{
-		PC->bShowMouseCursor = true;
-		PC->bEnableClickEvents = true;
-		PC->bEnableTouchEvents = true;
-		PC->bEnableMouseOverEvents = true;
-		FInputModeGameAndUI InputMode;
-		InputMode.SetHideCursorDuringCapture(false);
-		PC->SetInputMode(InputMode);
-	}
-}
 
-void ATicTacToeGameMode::SetBoardActorRef() {
-	BoardActorRef = Cast<ABoardActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoardActor::StaticClass()));
-	if (!BoardActorRef)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("BoardActor not found in level!"));
-	}
-}
 
-void ATicTacToeGameMode::SetGameState() {
-	TTTGameState = Cast<ATTTGameStateBase>(GameState);
-	if(!TTTGameState)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TTTGameState not found!"));
-	}
-}
 
-void ATicTacToeGameMode::SetGameInstance() {
-	TTTGameInstance = Cast<UTTTGameInstance>(GetGameInstance());
-		if (!TTTGameInstance) {
-			UE_LOG(LogTemp, Warning, TEXT("TTTGameInstance not found!"));
-		}
-}
 
-UTTTGameInstance* ATicTacToeGameMode::GetTTTGameInstance() {
-	return TTTGameInstance;
-}
 
-UTTT_AI* ATicTacToeGameMode::GetAiPlayer()
-{
-	if (AiPlayer) {
-		return AiPlayer;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("AiPlayer not found!"));
-	return nullptr;
-}
 
-TArray<int32> ATicTacToeGameMode::GetGrid()
-{
-	return Grid;
-}
 
-void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
-{
-	AActor* Camera = UGameplayStatics::GetActorOfClass(GetWorld(), ACameraActor::StaticClass());
-	if (Camera)
-	{
-		PC->SetViewTargetWithBlend(Camera);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Camera not found!"));
-	}
-}
 
-void ATicTacToeGameMode::InitialiseGrid() {
-	Grid.Init(0, 9);
-	CurrentPlayer = DetermineStartingPlayer();
-	bGameOver = false;
 
-}
-
-int32 ATicTacToeGameMode::DetermineStartingPlayer() {
-	if (Winner == 0) {
-		return FMath::RandRange(1, 2);
-		
-	}
-	else {
-		int32 startingPlayer = 0;
-		startingPlayer = (Winner == 1) ? 2 : 1;
-		return startingPlayer;
-	}
-}
 
 bool ATicTacToeGameMode::CheckSeriesWin(int32 WinningPlayer)
 {
@@ -243,8 +140,7 @@ void ATicTacToeGameMode::SwitchTurn()
 	CurrentPlayer = (CurrentPlayer == 1) ? 2 : 1;
 }
 
-void ATicTacToeGameMode::RestartGame()
-{
+void ATicTacToeGameMode::SetupGame() {
 	if (BoardActorRef) {
 		BoardActorRef->ClearBoard();
 	}
@@ -253,8 +149,14 @@ void ATicTacToeGameMode::RestartGame()
 	UpdateRestartDisplay();
 }
 
-void ATicTacToeGameMode::RestartSeries()
+void ATicTacToeGameMode::RestartGame()
 {
+	TTT_StateMachine->TransitionToState(TTT_StateMachine->StartNewGame);
+}
+
+
+
+void ATicTacToeGameMode::SetupSeries() {
 	if (TTTGameState)
 	{
 		TTTGameState->ResetPlayerScores();
@@ -268,6 +170,11 @@ void ATicTacToeGameMode::RestartSeries()
 	UpdateTurnDisplay(CurrentPlayer);
 	UpdateScoreDisplay(0, 0);
 	UpdateRestartDisplay();
+}
+
+void ATicTacToeGameMode::RestartSeries()
+{
+	TTT_StateMachine->TransitionToState(TTT_StateMachine->StartNewSeries);
 }
 
 int32 ATicTacToeGameMode::GetCurrentPlayer() const
@@ -309,8 +216,6 @@ int32 ATicTacToeGameMode::CheckWinCondition() {
 	
 }
 
-
-
 bool ATicTacToeGameMode::CheckDrawCondition() {
 	for (int32 i = 0; i < 9; i++) {
 		if (Grid[i] == 0) {
@@ -318,4 +223,128 @@ bool ATicTacToeGameMode::CheckDrawCondition() {
 		}
 	}
 	return true;
+}
+
+
+///------------- Init Setter Functions: 
+
+void ATicTacToeGameMode::SetGameInstance() {
+	TTTGameInstance = Cast<UTTTGameInstance>(GetGameInstance());
+	if (!TTTGameInstance) {
+		UE_LOG(LogTemp, Warning, TEXT("TTTGameInstance not found!"));
+	}
+}
+
+void ATicTacToeGameMode::SetCameraSettings(APlayerController* PC)
+{
+	AActor* Camera = UGameplayStatics::GetActorOfClass(GetWorld(), ACameraActor::StaticClass());
+	if (Camera)
+	{
+		PC->SetViewTargetWithBlend(Camera);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Camera not found!"));
+	}
+}
+
+void ATicTacToeGameMode::SetGameState() {
+	TTTGameState = Cast<ATTTGameStateBase>(GameState);
+	if (!TTTGameState)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TTTGameState not found!"));
+	}
+}
+
+void ATicTacToeGameMode::SetBoardActorRef() {
+	BoardActorRef = Cast<ABoardActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoardActor::StaticClass()));
+	if (!BoardActorRef)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BoardActor not found in level!"));
+	}
+}
+
+void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
+	PC = GetWorld()->GetFirstPlayerController();
+	if (PC)
+	{
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableTouchEvents = true;
+		PC->bEnableMouseOverEvents = true;
+		FInputModeGameAndUI InputMode;
+		InputMode.SetHideCursorDuringCapture(false);
+		PC->SetInputMode(InputMode);
+	}
+}
+
+void ATicTacToeGameMode::InitialiseGrid() {
+	Grid.Init(0, 9);
+	CurrentPlayer = DetermineStartingPlayer();
+	bGameOver = false;
+}
+
+int32 ATicTacToeGameMode::DetermineStartingPlayer() {
+	if (Winner == 0) {
+		return FMath::RandRange(1, 2);
+	}
+	else {
+		int32 startingPlayer = 0;
+		startingPlayer = (Winner == 1) ? 2 : 1;
+		return startingPlayer;
+	}
+}
+
+void ATicTacToeGameMode::CreateAiPlayer(EAiDifficulty InAiDifficulty) {
+	switch (InAiDifficulty)
+	{
+
+
+	case EAiDifficulty::Easy:
+		AiPlayer = NewObject<UTTT_AI_Easy>(this);
+		if (!AiPlayer) {
+			UE_LOG(LogTemp, Warning, TEXT("Easy Ai is not found!"));
+		}
+		break;
+		//case EAiDifficulty::Medium:
+
+		//	if (!AiPlayer) {
+		//		UE_LOG(LogTemp, Warning, TEXT("Medium Ai is not found!"));
+		//	}
+		//	break;
+
+		//case EAiDifficulty::Impossible:
+
+		//	if (!AiPlayer) {
+		//		UE_LOG(LogTemp, Warning, TEXT("Impossible Ai is not found!"));
+		//	}
+		//	break;
+
+	default:
+		AiPlayer = NewObject<UTTT_AI_Easy>(this);
+		if (!AiPlayer) {
+			UE_LOG(LogTemp, Warning, TEXT("Default Easy Ai is not found!"));
+		}
+		break;
+	}
+}
+
+
+
+UTTTGameInstance* ATicTacToeGameMode::GetTTTGameInstance() {
+	return TTTGameInstance;
+}
+
+UTTT_AI* ATicTacToeGameMode::GetAiPlayer()
+{
+	if (AiPlayer) {
+		return AiPlayer;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("AiPlayer not found!"));
+	return nullptr;
+}
+
+TArray<int32> ATicTacToeGameMode::GetGrid()
+{
+	return Grid;
 }

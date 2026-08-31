@@ -23,8 +23,16 @@ public:
 	void Initialise(ATicTacToeGameMode* InTTTGameMode);
 	void Update();
 	void TransitionToState(UTTT_State* NewState);
+	void TransitionToNextState();
+	
 	UPROPERTY()
 	UTTT_State* WaitingForInput;
+	UPROPERTY()
+	UTTT_State* InitialiseGame;
+	UPROPERTY()
+	UTTT_State* StartNewSeries;
+	UPROPERTY()
+	UTTT_State* StartNewGame;
 
 protected:
 	UPROPERTY()

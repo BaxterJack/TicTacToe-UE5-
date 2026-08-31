@@ -13,7 +13,10 @@ void UStateWaitingForInput::Initialise(ATicTacToeGameMode* In_TTT_GameMode)
 
 void UStateWaitingForInput::OnEnter()
 {
-	IsVsAi = TTT_GameMode->GetTTTGameInstance()->GameModeChoice == EGameModeChoice::VsAI && TTT_GameMode->GetCurrentPlayer() == 2;
+	EGameModeChoice CurrentGameMode = TTT_GameMode->GetTTTGameInstance()->GameModeChoice;
+	int32 CurrentPlayer = TTT_GameMode->GetCurrentPlayer();
+
+	IsVsAi = (CurrentGameMode == EGameModeChoice::VsAI && CurrentPlayer == 2);
 	if (IsVsAi) {
 		TTT_GameMode->GetWorldTimerManager().SetTimer(AITimerHandle, TTT_GameMode, &ATicTacToeGameMode::TriggerAiTurn, 0.75f, false);
 	}

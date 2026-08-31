@@ -19,8 +19,12 @@ public:
 	virtual void OnEnter() PURE_VIRTUAL(UTTT_State::OnEnter,);
 	virtual void UpdateState() PURE_VIRTUAL(UTTT_State::UpdateState,);
 	virtual void OnExit() PURE_VIRTUAL(UTTT_State::OnExit,);
+	void SetTransitionState(UTTT_State* InTransitionState);
+	UTTT_State* GetTransitionState();
 
 protected:
 	UPROPERTY()
 	ATicTacToeGameMode* TTT_GameMode;
+	UPROPERTY()
+	UTTT_State* TransitionState;
 };
