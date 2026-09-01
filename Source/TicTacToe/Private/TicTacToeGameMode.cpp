@@ -5,6 +5,7 @@
 #include "BoardActor.h"
 #include "TTT_AI.h"
 #include "TTT_AI_Easy.h"
+#include "TTT_AI_Medium.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -53,16 +54,6 @@ void ATicTacToeGameMode::TriggerAiTurn() {
 	HandleSquareSelected(AiPlayer->ChooseMove(Grid, 2));
 
 }
-
-
-
-
-
-
-
-
-
-
 
 bool ATicTacToeGameMode::CheckSeriesWin(int32 WinningPlayer)
 {
@@ -306,12 +297,12 @@ void ATicTacToeGameMode::CreateAiPlayer(EAiDifficulty InAiDifficulty) {
 			UE_LOG(LogTemp, Warning, TEXT("Easy Ai is not found!"));
 		}
 		break;
-		//case EAiDifficulty::Medium:
-
-		//	if (!AiPlayer) {
-		//		UE_LOG(LogTemp, Warning, TEXT("Medium Ai is not found!"));
-		//	}
-		//	break;
+		case EAiDifficulty::Medium:
+			AiPlayer = NewObject<UTTT_AI_Medium>(this);
+			if (!AiPlayer) {
+				UE_LOG(LogTemp, Warning, TEXT("Medium Ai is not found!"));
+			}
+			break;
 
 		//case EAiDifficulty::Impossible:
 
