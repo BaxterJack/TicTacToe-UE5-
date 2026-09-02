@@ -6,6 +6,7 @@
 #include "TTT_AI.h"
 #include "TTT_AI_Easy.h"
 #include "TTT_AI_Medium.h"
+#include "TTT_AI_Impossible.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -304,12 +305,12 @@ void ATicTacToeGameMode::CreateAiPlayer(EAiDifficulty InAiDifficulty) {
 			}
 			break;
 
-		//case EAiDifficulty::Impossible:
-
-		//	if (!AiPlayer) {
-		//		UE_LOG(LogTemp, Warning, TEXT("Impossible Ai is not found!"));
-		//	}
-		//	break;
+		case EAiDifficulty::Impossible:
+			AiPlayer = NewObject<UTTT_AI_Impossible>(this);
+			if (!AiPlayer) {
+				UE_LOG(LogTemp, Warning, TEXT("Impossible Ai is not found!"));
+			}
+			break;
 
 	default:
 		AiPlayer = NewObject<UTTT_AI_Easy>(this);

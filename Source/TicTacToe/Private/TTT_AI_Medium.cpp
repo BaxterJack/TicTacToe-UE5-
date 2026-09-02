@@ -54,15 +54,15 @@ int32 UTTT_AI_Medium::FindLineWin(const TArray<int32>& InGrid, int32 InAiPlayerN
 
 int32 UTTT_AI_Medium::ChooseBestFreeSquare(const TArray<int32>& InGrid)
 {
-
-
-    if (InGrid[MiddleSquare] == 0) {return MiddleSquare;}
+    if (InGrid[MiddleSquare] == 0) 
+    {return MiddleSquare;}
     
     int32 FreeSquare = CheckFreeSpaces(InGrid, CornerSquares);
-    if (FreeSquare != -1) { return FreeSquare; }
+    if (FreeSquare != -1) 
+    {return FreeSquare; }
+
     FreeSquare = CheckFreeSpaces(InGrid, EdgeSquares);
     return FreeSquare; 
-
 }
 
 	
@@ -78,7 +78,8 @@ int32 UTTT_AI_Medium::CheckFreeSpaces(const TArray<int32>& InGrid, const TArray<
     }
     int32 NumFreeSpaces = FreeSpaces.Num();
     if (NumFreeSpaces > 0) {
-       return FreeSpaces[ FMath::RandRange(0, NumFreeSpaces - 1)];
+        int32 RandomIndex = FMath::RandRange(0, NumFreeSpaces - 1);
+       return FreeSpaces[RandomIndex];
     }
     return -1;
 }
