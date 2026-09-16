@@ -265,6 +265,7 @@ void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
 		PC->bEnableTouchEvents = true;
 		PC->bEnableMouseOverEvents = true;
 		FInputModeGameAndUI InputMode;
+		//FInputModeUIOnly InputMode;
 		InputMode.SetHideCursorDuringCapture(false);
 		PC->SetInputMode(InputMode);
 	}

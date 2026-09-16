@@ -13,7 +13,7 @@ void UTTT_State::SetTransitionState(UTTT_State* InTransitionState)
 {
     if (!InTransitionState)
     {
-        UE_LOG(LogTemp, Warning, TEXT("SetTransitionState failed on %s — InTransitionState is null"),
+        UE_LOG(LogTemp, Warning, TEXT("SetTransitionState failed on %s .. InTransitionState is null"),
             *GetName());
         return;
     }
@@ -26,7 +26,7 @@ UTTT_State* UTTT_State::GetTransitionState()
 {
     if (!TransitionState)
     {
-        UE_LOG(LogTemp, Warning, TEXT("GetTransitionState failed on %s — TransitionState is null"),
+        UE_LOG(LogTemp, Warning, TEXT("GetTransitionState failed on %s .. TransitionState is null"),
             *GetName());
         return nullptr;
     }

@@ -45,7 +45,7 @@ int32 UTTT_AI_Medium::FindLineWin(const TArray<int32>& InGrid, int32 InAiPlayerN
 
         if (PlayerCount == 2 && EmptyIndex != -1 && !bOpponentPresent)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Pattern %d matched — returning square %d"), i, EmptyIndex);
+            UE_LOG(LogTemp, Warning, TEXT("Pattern %d matched .. returning square %d"), i, EmptyIndex);
             return EmptyIndex;
         }
     }
