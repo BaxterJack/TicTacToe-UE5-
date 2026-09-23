@@ -169,6 +169,28 @@ void ATicTacToeGameMode::RestartSeries()
 	TTT_StateMachine->TransitionToState(TTT_StateMachine->StartNewSeries);
 }
 
+FSeriesInfo ATicTacToeGameMode::GetSeriesInfo()
+{
+	FSeriesInfo Info;
+	int32 P_OneScore = TTTGameState->GetPlayerScore(1);
+	int32 P_TwoScore = TTTGameState->GetPlayerScore(2);
+	int32 SeriesLength = TTTGameInstance->GetSeriesLength();
+
+	if (P_OneScore > P_TwoScore) {
+		Info.CurrentLeader = 1;
+		Info.WinsRequired = SeriesLength - P_OneScore;
+	}
+	else if (P_TwoScore > P_OneScore) {
+		Info.CurrentLeader = 2;
+		Info.WinsRequired = SeriesLength - P_TwoScore;
+	}
+	else {
+		Info.CurrentLeader = 0;
+		Info.WinsRequired = SeriesLength - P_OneScore;
+	}
+	return Info;
+}
+
 int32 ATicTacToeGameMode::GetCurrentPlayer() const
 {
 	return CurrentPlayer;

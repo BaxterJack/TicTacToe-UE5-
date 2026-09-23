@@ -15,6 +15,26 @@ class UTTT_AI;
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FSeriesInfo {
+    GENERATED_BODY()
+
+    // Current leader — 0 = draw, 1 = Player 1, 2 = Player 2
+    UPROPERTY(BlueprintReadOnly)
+    int32 CurrentLeader;
+
+
+    // How many wins needed to win the series
+    UPROPERTY(BlueprintReadOnly)
+    int32 WinsRequired;
+
+    FSeriesInfo()
+        : CurrentLeader(0)
+        , WinsRequired(1)
+    { }
+};
+
 UCLASS()
 class TICTACTOE_API ATicTacToeGameMode : public AGameModeBase
 {
@@ -44,6 +64,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void RestartSeries();
+
+    UFUNCTION(BlueprintCallable)
+    FSeriesInfo GetSeriesInfo();
 
     void SetupSeries();
 
