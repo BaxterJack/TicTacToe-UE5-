@@ -85,27 +85,38 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 	if (BoardActorRef) {
 		BoardActorRef->SpawnPieceAtSquare(SquareIndex, CurrentPlayer);
 	}
-	int32 WinResult = CheckWinCondition();
 
-	if (WinResult != 0) {
+	int32 WinResult = CheckWinCondition();
+	if (WinResult != 0)
+	{
 		bGameOver = true;
 		Winner = WinResult;
-		UE_LOG(LogTemp, Warning, TEXT("Player %d wins!"), Winner);
-		UpdatePlayersScore(Winner);
-		if(CheckSeriesWin(Winner))
+		FVector StartPos;
+		FVector EndPos;
+		if (BoardActorRef)
 		{
-			UpdateSeriesOverDisplay(Winner);
+			BoardActorRef->HighlightWinningSquares(ThreeInARow);
+			StartPos = BoardActorRef->GetSquareWorldLocation(ThreeInARow[0]);
+			EndPos = BoardActorRef->GetSquareWorldLocation(ThreeInARow[2]);
+		}
+		UpdatePlayersScore(WinResult);
+
+		
+		if (CheckSeriesWin(WinResult))
+		{
+			UpdateSeriesOverDisplay(WinResult);
 			return;
 		}
-		UpdateGameOverDisplay(Winner);
-		return;
+
+		UpdateGameOverDisplay(WinResult, StartPos, EndPos);
+
 	}
 
 	if (CheckDrawCondition()) {
 		bGameOver = true;
 		Winner = 0;
 		UE_LOG(LogTemp, Warning, TEXT("Draw!"));
-		UpdateGameOverDisplay(0);
+		UpdateGameOverDisplay(0, FVector::ZeroVector , FVector::ZeroVector);
 		return;
 	}
 	SwitchTurn();
@@ -222,6 +233,10 @@ int32 ATicTacToeGameMode::CheckWinCondition() {
 		// If all three squares match and aren't empty
 		if (A != 0 && A == B && B == C)
 		{
+			ThreeInARow[0] = WinPatterns[i][0];
+			ThreeInARow[1] = WinPatterns[i][1];
+			ThreeInARow[2] = WinPatterns[i][2];
+
 			return A; // Returns 1 or 2 — the winning player
 		}
 	}
@@ -295,6 +310,7 @@ void ATicTacToeGameMode::SetPlayerInputSettings(APlayerController* PC) {
 
 void ATicTacToeGameMode::InitialiseGrid() {
 	Grid.Init(0, 9);
+	ThreeInARow.Init(-1, 3);
 	CurrentPlayer = DetermineStartingPlayer();
 	bGameOver = false;
 }

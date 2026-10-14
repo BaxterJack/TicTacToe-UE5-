@@ -44,7 +44,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetBoardSpaces();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundBase* PiecePlacementSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundBase* WinStrikethroughSound;
+
+	void HighlightWinningSquares(const TArray<int32>& InThreeInARow);
+
+	FVector GetSquareWorldLocation(int32 SquareIndex) const;
 
 protected:
 
@@ -57,6 +65,8 @@ protected:
 	// Gets the world location of a square by index
     // Used to know where to spawn a piece
 	FVector GetSquareLocation(int32 SquareIndex) const;
+
+
 
 private:
 

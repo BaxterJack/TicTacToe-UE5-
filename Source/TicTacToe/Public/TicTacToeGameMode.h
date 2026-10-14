@@ -82,7 +82,7 @@ public:
     void UpdateTurnDisplay(int32 Player);
 
     UFUNCTION(BlueprintImplementableEvent)
-    void UpdateGameOverDisplay(int32 WinningPlayer);
+    void UpdateGameOverDisplay(int32 WinningPlayer, FVector InStartPos, FVector InEndPos);
 
     UFUNCTION(BlueprintImplementableEvent)
     void UpdateRestartDisplay();
@@ -105,6 +105,9 @@ public:
     void InitialiseTTTGameMode();
 
     void NextState();
+
+    UPROPERTY(BlueprintReadOnly)
+    TArray<int32> ThreeInARow;
 
 protected:
 
@@ -155,7 +158,6 @@ protected:
     void SetCameraSettings(APlayerController* PC);
 
     void CreateAiPlayer(EAiDifficulty InAiDifficulty);
-
 
 
 private:

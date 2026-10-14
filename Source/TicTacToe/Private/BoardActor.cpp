@@ -4,6 +4,8 @@
 #include "BoardActor.h"
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInterface.h"
 
 // Sets default values
 ABoardActor::ABoardActor()
@@ -59,6 +61,33 @@ void ABoardActor::GetBoardSpaces() {
 	}
 }
 
+
+
+void ABoardActor::HighlightWinningSquares(const TArray<int32>& InThreeInARow)
+{
+	if (!WinStrikethroughSound)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("WinStrikethroughSound is null!"));
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), WinStrikethroughSound);
+	}
+
+	
+}
+
+FVector ABoardActor::GetSquareWorldLocation(int32 SquareIndex) const
+{
+	if (BoardSpaces.IsValidIndex(SquareIndex))
+	{
+		return BoardSpaces[SquareIndex]->GetComponentLocation();
+	}
+	return FVector::ZeroVector;
+}
+
+
+
 void ABoardActor::SpawnPieceAtSquare(int32 SquareIndex, int32 PieceType)
 {
 	if (SquareIndex >= 0 && SquareIndex <= 8)
@@ -77,6 +106,9 @@ void ABoardActor::SpawnPieceAtSquare(int32 SquareIndex, int32 PieceType)
 				if (SpawnedActor)
 				{
 					SpawnedPieces.Add(SpawnedActor);
+					if (PiecePlacementSound) {
+						UGameplayStatics::PlaySound2D(GetWorld(), PiecePlacementSound);
+					}
 				}
 			}
 			else
@@ -92,6 +124,9 @@ void ABoardActor::SpawnPieceAtSquare(int32 SquareIndex, int32 PieceType)
 				if (SpawnedActor)
 				{
 					SpawnedPieces.Add(SpawnedActor);
+					if (PiecePlacementSound) {
+						UGameplayStatics::PlaySound2D(GetWorld(), PiecePlacementSound);
+					}
 				}
 			}
 			else
