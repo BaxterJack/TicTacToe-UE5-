@@ -104,7 +104,7 @@ void ATicTacToeGameMode::HandleSquareSelected(int32 SquareIndex) {
 		
 		if (CheckSeriesWin(WinResult))
 		{
-			UpdateSeriesOverDisplay(WinResult);
+			UpdateSeriesOverDisplay(WinResult, StartPos, EndPos);
 			return;
 		}
 

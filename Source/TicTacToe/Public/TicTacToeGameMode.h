@@ -91,7 +91,7 @@ public:
     void UpdateScoreDisplay(int32 P1Score, int32 P2Score);
 
     UFUNCTION(BlueprintImplementableEvent)
-    void UpdateSeriesOverDisplay(int32 WinningPlayer);
+    void UpdateSeriesOverDisplay(int32 WinningPlayer, FVector InStartPos, FVector InEndPos);
 
     UFUNCTION(BlueprintCallable)
     UTTTGameInstance* GetTTTGameInstance();
